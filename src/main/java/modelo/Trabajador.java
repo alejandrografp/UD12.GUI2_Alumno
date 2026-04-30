@@ -119,5 +119,9 @@ public class Trabajador {
 	public void setPuesto(String puesto) {
 		this.puesto = puesto;
 	}
-	
+
+
+	public String toStringWithSeparators() {
+		return identificador + ";" + dni + ";" + nombre + ";" + apellidos + ";" + direccion + ";" + telefono + ";" + puesto;
+	}
 }

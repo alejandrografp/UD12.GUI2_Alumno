@@ -10,9 +10,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import dao.AccesoTrabajador;
 import dialogs.AltaDialog;
 import dialogs.BajaDialog;
 import dialogs.ListarDialog;
+import excepciones.BDException;
 import ficheros.FicheroDatos;
 import modelo.Empresa;
 import modelo.Trabajador;
@@ -38,9 +40,13 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 
 		// Carga los trabajadores leidos de un fichero a memoria
 		ArrayList<Trabajador> trabaj = FicheroDatos.obtenerTrabajadores("ficheroDatos\\empresa.dat");
-		empresa = new Empresa(trabaj);
+        try {
+            AccesoTrabajador.insertarTrabajadores(trabaj);
+        } catch (BDException e) {
+            throw new RuntimeException(e);
+        }
 
-		// Tamaño JFrame
+        // Tamaño JFrame
 		setSize(800, 750);
 		// Cerrar al salir
 		setDefaultCloseOperation(EXIT_ON_CLOSE);

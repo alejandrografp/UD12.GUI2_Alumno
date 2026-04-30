@@ -39,6 +39,47 @@ public class AccesoTrabajador {
         }
         return columnasInsertadas > 0;
     }
+
+    public static boolean insertarTrabajadorConId(Trabajador trabajador) throws BDException {
+        Connection conexion = null;
+        int columnasInsertadas;
+
+        try {
+            conexion = abrirConexion();
+
+            String sentenciaInsertarTrabajador = "INSERT INTO trabajador(id, dni, nombre, apellidos, direccion, telefono, puesto) VALUES(?,?,?,?,?,?,?);";
+            PreparedStatement sentencia = conexion.prepareStatement(sentenciaInsertarTrabajador);
+            sentencia.setInt(1, trabajador.getIdentificador());
+            sentencia.setString(2, trabajador.getDni());
+            sentencia.setString(3, trabajador.getNombre());
+            sentencia.setString(4, trabajador.getApellidos());
+            sentencia.setString(5, trabajador.getDireccion());
+            sentencia.setString(6, trabajador.getTelefono());
+            sentencia.setString(7, trabajador.getPuesto());
+            columnasInsertadas = sentencia.executeUpdate();
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            throw new BDException(BDException.ERROR_QUERY + e.getMessage());
+        } catch (BDException e) {
+            throw new BDException(BDException.ERROR_QUERY + e.getMessage());
+        } finally {
+            if (conexion != null) {
+                ConfigMySql.cerrarConexion(conexion);
+            }
+        }
+        return columnasInsertadas > 0;
+    }
+
+    public static void insertarTrabajadores(ArrayList<Trabajador> trabajadores) throws BDException {
+        for (int i = 0; i< trabajadores.size(); i++) {
+            try {
+                AccesoTrabajador.insertarTrabajadorConId(trabajadores.get(i));
+            } catch (BDException e) {
+                AccesoTrabajador.modificarTrabajador(trabajadores.get(i));
+            }
+        }
+    }
     public static boolean eliminarTrabajador(int id) throws BDException {
         Connection conexion = null;
         int columnasInsertadas;
@@ -124,16 +165,22 @@ public class AccesoTrabajador {
         return trabajadores;
     }
 
-    public static boolean modificarTrabajador(int id) throws BDException {
+    public static boolean modificarTrabajador(Trabajador trabajador) throws BDException {
         Connection conexion = null;
         int columnasInsertadas;
 
         try {
             conexion = abrirConexion();
 
-            String sentenciaModificarTrabajador = "DELETE FROM trabajador WHERE id = ?;";
+            String sentenciaModificarTrabajador = "UPDATE trabajador SET dni = ?, nombre = ?, apellidos = ?, direccion = ?, telefono = ?, puesto = ? WHERE id = ?;";
             PreparedStatement sentencia = conexion.prepareStatement(sentenciaModificarTrabajador);
-            sentencia.setInt(1, id);
+            sentencia.setString(1, trabajador.getDni());
+            sentencia.setString(2, trabajador.getNombre());
+            sentencia.setString(3, trabajador.getApellidos());
+            sentencia.setString(4, trabajador.getDireccion());
+            sentencia.setString(5, trabajador.getTelefono());
+            sentencia.setString(6, trabajador.getPuesto());
+            sentencia.setInt(7, trabajador.getIdentificador());
             columnasInsertadas = sentencia.executeUpdate();
 
         } catch (SQLException e) {

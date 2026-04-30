@@ -8,7 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import dao.AccesoTrabajador;
+import excepciones.BDException;
 import modelo.Trabajador;
 
 /**
@@ -28,13 +31,8 @@ public class FicheroDatos {
 		try {
 			fichero = new DataOutputStream (new FileOutputStream(ruta)); 
 			for(int i=0; i<trabajadores.size(); i++){
-				fichero.writeInt(trabajadores.get(i).getIdentificador());
-				fichero.writeUTF(trabajadores.get(i).getDni());
-				fichero.writeUTF(trabajadores.get(i).getNombre());
-				fichero.writeUTF(trabajadores.get(i).getApellidos());
-				fichero.writeUTF(trabajadores.get(i).getDireccion());
-				fichero.writeUTF(trabajadores.get(i).getTelefono());
-				fichero.writeUTF(trabajadores.get(i).getPuesto());
+				fichero.writeUTF(trabajadores.get(i).toStringWithSeparators() + "\n");
+
 			}		
 		} 
 		catch (FileNotFoundException e1){
@@ -68,26 +66,25 @@ public class FicheroDatos {
 			ficheroDatos=new DataInputStream(new FileInputStream(rutaFichero));
 			while (true){
 				int id = ficheroDatos.readInt();
-				String dni =ficheroDatos.readUTF();
-				String nombre =ficheroDatos.readUTF();
-				String apellidos =ficheroDatos.readUTF();
-				String direccion =ficheroDatos.readUTF();
-				String telefono =ficheroDatos.readUTF();
-				String puesto =ficheroDatos.readUTF();
+				String dni = ficheroDatos.readUTF();
+				String nombre = ficheroDatos.readUTF();
+				String apellidos = ficheroDatos.readUTF();
+				String direccion = ficheroDatos.readUTF();
+				String telefono = ficheroDatos.readUTF();
+				String puesto = ficheroDatos.readUTF();
 				t = new Trabajador(id,dni,nombre,apellidos,direccion,telefono,puesto);
-				trabajadoresLeidos.add(t);				
+				trabajadoresLeidos.add(t);
 			}			
 		}
 		catch (EOFException e){
-			
-		} 
+
+		}
 		catch (FileNotFoundException e){
 			e.printStackTrace();
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
-		}
-		finally{
+		} finally{
 			try {
 				ficheroDatos.close();
 			} catch (IOException e) {
