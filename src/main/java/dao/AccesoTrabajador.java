@@ -72,7 +72,7 @@ public class AccesoTrabajador {
     }
 
     public static void insertarTrabajadores(ArrayList<Trabajador> trabajadores) throws BDException {
-        for (int i = 0; i< trabajadores.size(); i++) {
+        for (int i = 0; i < trabajadores.size(); i++) {
             try {
                 AccesoTrabajador.insertarTrabajadorConId(trabajadores.get(i));
             } catch (BDException e) {
@@ -105,21 +105,20 @@ public class AccesoTrabajador {
         return columnasInsertadas > 0;
     }
 
-    public static boolean consultarTrabajador(int id) throws BDException {
+    public static boolean consultarTrabajadorPorDni(String dni) throws BDException {
         Connection conexion = null;
         ResultSet rs = null;
         List <Trabajador> trabajadores = new ArrayList<>();
         try {
             conexion = abrirConexion();
 
-            String sentenciaConsultarTrabajador = "SELECT * FROM trabajador WHERE id = ?;";
+            String sentenciaConsultarTrabajador = "SELECT * FROM trabajador WHERE dni = ?;";
             PreparedStatement sentencia = conexion.prepareStatement(sentenciaConsultarTrabajador);
-            sentencia.setInt(1, id);
+            sentencia.setString(1, dni);
             rs = sentencia.executeQuery();
 
-            while (rs.next()) {
-                Trabajador t = new Trabajador(rs.getInt("id"), rs.getString("dni"), rs.getString("nombre"), rs.getString("apellidos"), rs.getString("direccion"), rs.getString("telefono"), rs.getString("puesto"));
-                trabajadores.add(t);
+            if (rs.next()) {
+                return true;
             }
 
         } catch (SQLException e) {
@@ -132,13 +131,13 @@ public class AccesoTrabajador {
                 ConfigMySql.cerrarConexion(conexion);
             }
         }
-        return true;
+        return false;
     }
 
-    public static List <Trabajador> consultarTrabajadores() throws BDException {
+    public static ArrayList <Trabajador> consultarTrabajadores() throws BDException {
         Connection conexion = null;
         ResultSet rs = null;
-        List <Trabajador> trabajadores = new ArrayList<>();
+        ArrayList <Trabajador> trabajadores = new ArrayList<>();
 
         try {
             conexion = abrirConexion();

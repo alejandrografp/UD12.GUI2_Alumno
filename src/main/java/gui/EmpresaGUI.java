@@ -39,7 +39,7 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 		super("Gestión de personal");
 
 		// Carga los trabajadores leidos de un fichero a memoria
-		ArrayList<Trabajador> trabaj = FicheroDatos.obtenerTrabajadores("ficheroDatos\\empresa.dat");
+		ArrayList<Trabajador> trabaj = FicheroDatos.obtenerTrabajadoresDeCSV("ficheroDatos\\empresa.csv");
         try {
             AccesoTrabajador.insertarTrabajadores(trabaj);
         } catch (BDException e) {
@@ -106,8 +106,13 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 		}
 		// Cuando se sale se vuelca a fichero.
 		else if (e.getSource() == salir) {
-			FicheroDatos.escribirTrabajadores("ficheroDatos\\empresa.dat", empresa.getTrabajadores());
-			System.exit(0);
+            try {
+                FicheroDatos.escribirTrabajadoresEnCSV("ficheroDatos\\empresa.csv", AccesoTrabajador.consultarTrabajadores());
+            } catch (BDException ex) {
+                //mostrar dialogo de fallo
+				System.out.println("hola");
+            }
+            System.exit(0);
 		}
 	}
 

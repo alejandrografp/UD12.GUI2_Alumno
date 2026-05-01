@@ -35,6 +35,9 @@ public class Trabajador {
 		this.telefono = telefono;
 		this.puesto = puesto;
 	}
+
+
+
 	/**
 	 * @return the identificador
 	 */
@@ -122,6 +125,7 @@ public class Trabajador {
 
 
 	public String toStringWithSeparators() {
-		return identificador + ";" + dni + ";" + nombre + ";" + apellidos + ";" + direccion + ";" + telefono + ";" + puesto;
+
+		return identificador + ";" + dni + ";" + nombre + ";" + apellidos + ";" + direccion + ";" + telefono + ";" + puesto + "\n";
 	}
 }

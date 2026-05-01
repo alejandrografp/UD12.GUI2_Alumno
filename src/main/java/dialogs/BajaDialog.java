@@ -6,16 +6,17 @@ package dialogs;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 
+import dao.AccesoTrabajador;
+import excepciones.BDException;
 import modelo.Empresa;
+import modelo.Trabajador;
 
 /**
  * 
@@ -31,6 +32,15 @@ public class BajaDialog extends JDialog implements ActionListener {
 	JPanel panel;
 	JPanel panelBotones;
 	JLabel texto;
+	static JTable tabla;
+
+	DefaultTableModel model;
+
+	ArrayList<Trabajador> datosTabla;
+	Object[] fila;
+
+	Object[] columnasTabla = {"ID", "DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "puesto"};
+	DefaultTableModel modelo;
 
 	Empresa empresa;
 
@@ -40,22 +50,31 @@ public class BajaDialog extends JDialog implements ActionListener {
 		setResizable(false);
 		// t�tulo del di�log
 		setTitle("Baja Trabajador");
-		setSize(300, 200);
+		setSize(600, 570);
 		setLayout(new FlowLayout());
 		setLocationRelativeTo(null);
 
-		texto = new JLabel("<html>Introduzca el ID del trabajador<br> que desea dar de baja<br><br></html>");
+		texto = new JLabel("<html><div style='text-align: center;'>Seleccione al trabajador<br> que desea dar de baja<br><br></div></html>", SwingConstants.CENTER);
 		add(texto);
 
 		panel = new JPanel();
 		panelBotones = new JPanel();
 		add(panel);
-		add(panelBotones);
 
-		identificador = new JLabel("Identificador");
-		panel.add(identificador);
-		areaIdentificador = new JTextField(15);
-		panel.add(areaIdentificador);
+
+
+
+        try {
+        	modelo = new DefaultTableModel(null, columnasTabla);
+			tabla = new JTable(modelo);
+			panel.add(tabla);
+			add(new JScrollPane(tabla));
+			datosTabla(columnasTabla, modelo);
+		} catch (BDException e) {
+            throw new RuntimeException(e);
+        }
+
+		add(panelBotones);
 
 		aceptar = new JButton("Aceptar");
 		aceptar.addActionListener(this);
@@ -69,33 +88,60 @@ public class BajaDialog extends JDialog implements ActionListener {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
 
+	private static void datosTabla(Object[] columnasTabla, DefaultTableModel modelo) throws BDException {
+		tabla.setModel(modelo);
+		Object[] fila;
+		ArrayList<Trabajador> datosTabla;
+		datosTabla = AccesoTrabajador.consultarTrabajadores();
+		fila = new Object[columnasTabla.length];
+		for(int i = 0; i < datosTabla.size(); i++) {
+			fila[0] = datosTabla.get(i).getIdentificador();
+			fila[1] = datosTabla.get(i).getDni();
+			fila[2] = datosTabla.get(i).getNombre();
+			fila[3] = datosTabla.get(i).getApellidos();
+			fila[4] = datosTabla.get(i).getDireccion();
+			fila[5] = datosTabla.get(i).getTelefono();
+			fila[6] = datosTabla.get(i).getPuesto();
+			modelo.addRow(fila);
+		}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-
 		if (e.getSource() == aceptar) {
-			int respuesta = JOptionPane.showConfirmDialog(null, "�Desea dar de baja el trabajador?", "Borrar",
-					JOptionPane.YES_NO_OPTION);
-			switch (respuesta) {
-			case JOptionPane.YES_OPTION:
-				try {
-					// Operaciones en caso afirmativo
-					if (empresa.bajaTrabajador(Integer.parseInt(areaIdentificador.getText()))) {
-						JOptionPane.showMessageDialog(this, "El trabajador se ha eliminado correctamente");
-					} else {
-						JOptionPane.showMessageDialog(null, "El trabajador no se encuentra en la lista", "Error",
-								JOptionPane.ERROR_MESSAGE);
-					}
 
+            try {
+                int id = (int) tabla.getValueAt(tabla.getSelectedRow(), 0);
+
+				int respuesta = JOptionPane.showConfirmDialog(null, "�Desea dar de baja el trabajador?", "Borrar",
+						JOptionPane.YES_NO_OPTION);
+				switch (respuesta) {
+				case JOptionPane.YES_OPTION:
+						// Operaciones en caso afirmativo
+						if (AccesoTrabajador.eliminarTrabajador(id)) {
+							JOptionPane.showMessageDialog(this, "El trabajador se ha eliminado correctamente");
+                            try {
+                                DefaultTableModel renderer = new DefaultTableModel(columnasTabla, 0);
+                                datosTabla(columnasTabla, renderer);
+                            } catch (BDException ex) {
+								JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
+										JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else {
+							JOptionPane.showMessageDialog(null, "El trabajador no se encuentra en la lista", "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
+
+						break;
+
+				case JOptionPane.NO_OPTION:
+					// Operaciones en caso negativo
 					break;
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(null, "El ID debe ser un n�mero entero", "Error",
-							JOptionPane.ERROR_MESSAGE);
 				}
-
-			case JOptionPane.NO_OPTION:
-				// Operaciones en caso negativo
-				break;
+			} catch (Exception ex) {
+				JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (e.getSource() == cancelar) {
 			dispose();

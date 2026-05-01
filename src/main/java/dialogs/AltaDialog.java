@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import dao.AccesoTrabajador;
+import excepciones.BDException;
 import modelo.Empresa;
 import modelo.Trabajador;
 
@@ -58,7 +60,6 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 	String telefono = "";
 	String puesto = "";
 
-	JPanel pIdentificador;
 	JPanel pDni;
 	JPanel pNombre;
 	JPanel pApellidos;
@@ -80,7 +81,6 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 		setLocationRelativeTo(null);
 
 		// una fila por JPanel
-		pIdentificador = new JPanel();
 		pDni = new JPanel();
 		pNombre = new JPanel();
 		pApellidos = new JPanel();
@@ -90,11 +90,6 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 		pBotones = new JPanel();
 
 		// Se crean los elementos y se añaden
-		etiquetaIdentificador = new JLabel("Identificador");
-		areaIdentificador = new JTextField(15);
-		// Se añaden al JPanel
-		pIdentificador.add(etiquetaIdentificador);
-		pIdentificador.add(areaIdentificador);
 
 		// Se crean los elementos y se añaden
 		etiquetaDni = new JLabel("DNI                 ");
@@ -145,7 +140,6 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 		pPuesto.add(comboPuesto);
 
 		// Añadir al JDialog los JPanel
-		add(pIdentificador);
 		add(pDni);
 		add(pNombre);
 		add(pApellidos);
@@ -179,16 +173,14 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 		// TODO Auto-generated method stub
 		if (e.getSource() == aceptar) {
 			try {
-
-				id = Integer.parseInt(areaIdentificador.getText());
 				dni = areaDni.getText();
 				nombre = areaNombre.getText();
 				apellidos = areaApellidos.getText();
 				direccion = areaDireccion.getText();
 				telefono = areaTelefono.getText();
 				if (comprobarErrores()) {
-					Trabajador t = new Trabajador(id, dni, nombre, apellidos, direccion, telefono, puesto);
-					if (empresa.altaTrabajador(t)) {
+					Trabajador t = new Trabajador(0, dni, nombre, apellidos, direccion, telefono, puesto);
+					if (AccesoTrabajador.insertarTrabajador(t)) {
 						JOptionPane.showMessageDialog(null, "Datos introducidos correctamente");
 					} else {
 						JOptionPane.showMessageDialog(null, "El ID del trabajador que quiere introducir ya existe",
@@ -196,15 +188,61 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 					}
 				}
 
-			} catch (Exception e1) {
-				JOptionPane.showMessageDialog(null, "El ID debe ser un n�mero entero", "Error",
-						JOptionPane.ERROR_MESSAGE);
-			}
+			} catch (BDException ex) {
+				JOptionPane.showMessageDialog(null, e,
+						"Error", JOptionPane.ERROR_MESSAGE);
+            }
 
-		} else if (e.getSource() == cancelar) {
+        } else if (e.getSource() == cancelar) {
 			dispose();
 		}
 
+	}
+
+	public static boolean validarDNI(String dni) {
+			if (dni == null || dni.length() != 9) {
+				return false;
+			}
+
+			String dniEnMayusculas = dni.toUpperCase();
+			String numeros = dniEnMayusculas.substring(0, 8);
+			char letra = dniEnMayusculas.charAt(8);
+
+			if (!numeros.matches("\\d{8}")) {
+				return false;
+			}
+
+			String letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
+			int indice = Integer.parseInt(numeros) % 23;
+			char letraEsperada = letrasValidas.charAt(indice);
+
+			if (letra != letraEsperada) {
+				return false;
+			}
+			return true;
+	}
+
+	public static boolean validarTelefono(String telefono) {
+		// Comprueba null y vacío por separado para evitar NullPointerException
+		if (telefono == null || telefono.isBlank()) {
+			return false;
+		}
+
+		// Elimina espacios y guiones para normalizar: "+34 612-345-678" → "+34612345678"
+		String telefonoLimpio = telefono.replaceAll("[\\s-]", "");
+
+		String expresionRegular =
+				"^"
+						+ "(\\+34)?" // Prefijo +34 opcional (el \\ escapa el + para tratarlo como literal)
+						+ "[6-9]"    // Un dígito entre 6 y 9 (primer dígito válido en España)
+						+ "\\d{8}"   // Exactamente 8 dígitos más (\\d = cualquier dígito 0-9)
+						+ "$";
+
+		// Si NO coincide con el patrón, el teléfono está mal formado
+		if (!telefonoLimpio.matches(expresionRegular)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -213,19 +251,20 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 	 * 
 	 * @return
 	 */
-	public boolean comprobarErrores() {
-		if (id < 1) {
-			JOptionPane.showMessageDialog(null, "El ID debe ser un n�mero entero positivo", "Error",
-					JOptionPane.ERROR_MESSAGE);
+	public boolean comprobarErrores() throws BDException {
+		if (dni.trim().equals("") || !validarDNI(dni) || AccesoTrabajador.consultarTrabajadorPorDni(dni)) {
+			if (!AccesoTrabajador.consultarTrabajadorPorDni(dni)) {
+				JOptionPane.showMessageDialog(null, "El DNI debe ser valido", "Error", JOptionPane.ERROR_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "Ya existe un trabajador con el mismo dni", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+
 			return false;
-		} else if (dni.equals("") || dni.length() != 9) {
-			JOptionPane.showMessageDialog(null, "El DNI debe tener longitud 9", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-		} else if (nombre.equals("")) {
+		} else if (nombre.trim().equals("")) {
 			JOptionPane.showMessageDialog(null, "Debe introducir el nombre del trabajador", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
-		} else if (apellidos.equals("")) {
+		} else if (apellidos.trim().equals("")) {
 			JOptionPane.showMessageDialog(null, "Debe introducir los apellidos del trabajador", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -233,8 +272,8 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 			JOptionPane.showMessageDialog(null, "Debe introducir la direcci�n del trabajador", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
-		} else if (telefono.equals("") || telefono.length() != 9) {
-			JOptionPane.showMessageDialog(null, "El tel�fono debe tener longitud 9", "Error",
+		} else if (telefono.trim().equals("") || !validarTelefono(telefono)) {
+			JOptionPane.showMessageDialog(null, "El tel�fono no es valido", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		} else if (puesto.equals("")) {
