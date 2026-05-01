@@ -258,7 +258,6 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 			} else {
 				JOptionPane.showMessageDialog(null, "Ya existe un trabajador con el mismo dni", "Error", JOptionPane.ERROR_MESSAGE);
 			}
-
 			return false;
 		} else if (nombre.trim().equals("")) {
 			JOptionPane.showMessageDialog(null, "Debe introducir el nombre del trabajador", "Error",

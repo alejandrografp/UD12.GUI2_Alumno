@@ -6,6 +6,7 @@ import java.util.List;
 
 import dao.AccesoTrabajador;
 import excepciones.BDException;
+import gui.EmpresaGUI;
 import modelo.Trabajador;
 
 /**

@@ -9,7 +9,7 @@ import excepciones.BDException;
 public class ConfigMySql {
 
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String URLBD = "jdbc:mysql://localhost:3306/empleado";
+    private static final String URLBD = "jdbc:mysql://localhost:3306/empleados";
 
     private static final String usuario = "root";
     private static final String contraseña = "";
