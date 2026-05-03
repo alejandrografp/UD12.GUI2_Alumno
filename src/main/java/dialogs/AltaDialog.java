@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -18,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import dao.AccesoPuestos;
 import dao.AccesoTrabajador;
 import excepciones.BDException;
 import modelo.Empresa;
@@ -132,11 +134,18 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 		// lista desplegable
 		comboPuesto = new JComboBox();
 		comboPuesto.addItem("Elija Puesto");
-		comboPuesto.addItem("Programador");
-		comboPuesto.addItem("Analista");
-		comboPuesto.addItem("Arquitecto");
-		comboPuesto.addItem("Jefe de Proyecto");
-		comboPuesto.addItemListener(this);
+		List<String> puestos = null;
+        try {
+             puestos = AccesoPuestos.consultarPuestos();
+        } catch (BDException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(),
+					"Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+		for (int i = 0; i < puestos.size(); i++) {
+			comboPuesto.addItem(puestos.get(i));
+		}
+        comboPuesto.addItemListener(this);
 		pPuesto.add(comboPuesto);
 
 		// Añadir al JDialog los JPanel

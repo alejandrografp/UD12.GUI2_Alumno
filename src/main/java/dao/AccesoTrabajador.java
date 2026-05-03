@@ -24,7 +24,9 @@ public class AccesoTrabajador {
             sentencia.setString(3, trabajador.getApellidos());
             sentencia.setString(4, trabajador.getDireccion());
             sentencia.setString(5, trabajador.getTelefono());
-            sentencia.setString(6, trabajador.getPuesto());
+
+            int id_puesto = AccesoPuestos.consultarIdPuesto(trabajador.getPuesto());
+            sentencia.setInt(6, id_puesto);
             columnasInsertadas = sentencia.executeUpdate();
 
         } catch (SQLException e) {
@@ -55,7 +57,9 @@ public class AccesoTrabajador {
             sentencia.setString(4, trabajador.getApellidos());
             sentencia.setString(5, trabajador.getDireccion());
             sentencia.setString(6, trabajador.getTelefono());
-            sentencia.setString(7, trabajador.getPuesto());
+
+            int id_puesto = AccesoPuestos.consultarIdPuesto(trabajador.getPuesto());
+            sentencia.setInt(6, id_puesto);
             columnasInsertadas = sentencia.executeUpdate();
 
         } catch (SQLException e) {
@@ -142,12 +146,12 @@ public class AccesoTrabajador {
         try {
             conexion = abrirConexion();
 
-            String sentenciaConsultarTrabajadores = "SELECT * FROM trabajador;";
+            String sentenciaConsultarTrabajadores = "SELECT * FROM trabajador t JOIN puestos p ON t.puesto = p.id;";
             PreparedStatement sentencia = conexion.prepareStatement(sentenciaConsultarTrabajadores);
             rs = sentencia.executeQuery();
 
             while (rs.next()) {
-                Trabajador t = new Trabajador(rs.getInt("id"), rs.getString("dni"), rs.getString("nombre"), rs.getString("apellidos"), rs.getString("direccion"), rs.getString("telefono"), rs.getString("puesto"));
+                Trabajador t = new Trabajador(rs.getInt("t.id"), rs.getString("t.dni"), rs.getString("t.nombre"), rs.getString("t.apellidos"), rs.getString("t.direccion"), rs.getString("t.telefono"), rs.getString("p.nombre"));
                 trabajadores.add(t);
             }
 
@@ -178,7 +182,9 @@ public class AccesoTrabajador {
             sentencia.setString(3, trabajador.getApellidos());
             sentencia.setString(4, trabajador.getDireccion());
             sentencia.setString(5, trabajador.getTelefono());
-            sentencia.setString(6, trabajador.getPuesto());
+
+            int id_puesto = AccesoPuestos.consultarIdPuesto(trabajador.getPuesto());
+            sentencia.setInt(6, id_puesto);
             sentencia.setInt(7, trabajador.getIdentificador());
             columnasInsertadas = sentencia.executeUpdate();
 
@@ -196,7 +202,7 @@ public class AccesoTrabajador {
     }
 
     static void main(String[] args) {
-        Trabajador trabajador = new Trabajador(1, "1", "a", "a", "a", "2", "hola");
+        Trabajador trabajador = new Trabajador(1, "1", "a", "a", "a", "2", "Arquitecto");
         try {
             insertarTrabajador(trabajador);
         } catch (BDException e) {
