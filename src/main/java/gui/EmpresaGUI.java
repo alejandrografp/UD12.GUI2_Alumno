@@ -6,9 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import dao.AccesoTrabajador;
 import dialogs.AltaDialog;
@@ -110,7 +108,8 @@ public class EmpresaGUI extends JFrame implements ActionListener {
                 FicheroDatos.escribirTrabajadoresEnCSV("ficheroDatos\\empresa.csv", AccesoTrabajador.consultarTrabajadores());
             } catch (BDException ex) {
                 //mostrar dialogo de fallo
-				System.out.println("hola");
+				JOptionPane.showMessageDialog(null, ex.getMessage(),
+						"Error", JOptionPane.ERROR_MESSAGE);
             }
             System.exit(0);
 		}
