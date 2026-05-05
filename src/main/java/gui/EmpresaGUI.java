@@ -100,7 +100,7 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 		} else if (e.getSource() == buscaTrabajador) {
 			//new VerDialog(empresa);
 		} else if (e.getSource() == listarTrabajadores) {
-			new ListarDialog(empresa);
+			new ListarDialog();
 		}
 		// Cuando se sale se vuelca a fichero.
 		else if (e.getSource() == salir) {
