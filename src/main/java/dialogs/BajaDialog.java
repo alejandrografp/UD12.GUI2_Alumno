@@ -76,6 +76,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 
 		add(panelBotones);
 
+
 		aceptar = new JButton("Aceptar");
 		aceptar.addActionListener(this);
 		panelBotones.add(aceptar);
@@ -89,7 +90,6 @@ public class BajaDialog extends JDialog implements ActionListener {
 	}
 
 	private static void datosTabla(Object[] columnasTabla, DefaultTableModel modelo) throws BDException {
-		tabla.setModel(modelo);
 		Object[] fila;
 		ArrayList<Trabajador> datosTabla;
 		datosTabla = AccesoTrabajador.consultarTrabajadores();
@@ -111,33 +111,29 @@ public class BajaDialog extends JDialog implements ActionListener {
 		// TODO Auto-generated method stub
 		if (e.getSource() == aceptar) {
 
-            try {
-                int id = (int) tabla.getValueAt(tabla.getSelectedRow(), 0);
+			try {
+				int id = (int) tabla.getValueAt(tabla.getSelectedRow(), 0);
+				int filaSeleccionada = tabla.getSelectedRow();
 
 				int respuesta = JOptionPane.showConfirmDialog(null, "�Desea dar de baja el trabajador?", "Borrar",
 						JOptionPane.YES_NO_OPTION);
 				switch (respuesta) {
-				case JOptionPane.YES_OPTION:
+					case JOptionPane.YES_OPTION:
 						// Operaciones en caso afirmativo
 						if (AccesoTrabajador.eliminarTrabajador(id)) {
 							JOptionPane.showMessageDialog(this, "El trabajador se ha eliminado correctamente");
-                            try {
-                                DefaultTableModel renderer = new DefaultTableModel(columnasTabla, 0);
-                                datosTabla(columnasTabla, renderer);
-                            } catch (BDException ex) {
-								JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
-										JOptionPane.ERROR_MESSAGE);
-                            }
-                        } else {
+							DefaultTableModel modelo2 = (DefaultTableModel) tabla.getModel();
+							modelo2.removeRow(filaSeleccionada);
+						} else {
 							JOptionPane.showMessageDialog(null, "El trabajador no se encuentra en la lista", "Error",
 									JOptionPane.ERROR_MESSAGE);
 						}
 
 						break;
 
-				case JOptionPane.NO_OPTION:
-					// Operaciones en caso negativo
-					break;
+					case JOptionPane.NO_OPTION:
+						// Operaciones en caso negativo
+						break;
 				}
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error",

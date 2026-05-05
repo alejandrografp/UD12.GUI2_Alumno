@@ -7,14 +7,16 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.*;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
+import dao.AccesoTrabajador;
+import excepciones.BDException;
 import modelo.Empresa;
+import modelo.Trabajador;
 
 /**
  * 
@@ -22,13 +24,16 @@ import modelo.Empresa;
  *
  */
 public class ListarDialog extends JDialog implements ActionListener {
-
-	Empresa empresa;
-	JTable tabla;
+	static JTable tabla;
 	JButton cerrar;
 
-	public ListarDialog(Empresa empresa) {
-		this.empresa = empresa;
+	Object[] columnasTabla = {"Identificador", "DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "Puesto"};
+	DefaultTableModel modelo;
+
+	JPanel panel;
+	JScrollPane jsp;
+
+	public ListarDialog() {
 
 		setResizable(false);
 		// t�tulo del di�log
@@ -40,19 +45,54 @@ public class ListarDialog extends JDialog implements ActionListener {
 		setLocationRelativeTo(null);
 
 		// Crea un JTable, cada fila será un trabajador
-		String[] columnas = { "Identificador", "DNI", "Nombre", "Apellidos", "Direcci�n", "Tel�fono", "Puesto" };
-		String[][] datos = empresa.listarTrabajadores();
-		tabla = new JTable(datos, columnas);
-		// Mete la tabla en un JCrollPane
-		JScrollPane jsp = new JScrollPane(tabla);
-		jsp.setPreferredSize(new Dimension(700, 600));
-		add(jsp);
+        ArrayList<Trabajador> datos = null;
+        try {
+            datos = AccesoTrabajador.consultarTrabajadores();
+        } catch (BDException e) {
+            throw new RuntimeException(e);
+        }
+
+		panel = new JPanel();
+		add(panel);
+
+
+
+
+		try {
+			modelo = new DefaultTableModel(null, columnasTabla);
+			tabla = new JTable(modelo);
+			panel.add(tabla);
+			jsp = new JScrollPane(tabla);
+			jsp.setPreferredSize(new Dimension(700, 600));
+			add(jsp);
+			datosTabla(columnasTabla, modelo);
+		} catch (BDException e) {
+			throw new RuntimeException(e);
+		}
 
 		cerrar = new JButton("Cerrar");
 		cerrar.addActionListener(this);
 		add(cerrar);
 
 		setVisible(true);
+	}
+
+	private static void datosTabla(Object[] columnasTabla, DefaultTableModel modelo) throws BDException {
+		tabla.setModel(modelo);
+		Object[] fila;
+		ArrayList<Trabajador> datosTabla;
+		datosTabla = AccesoTrabajador.consultarTrabajadores();
+		fila = new Object[columnasTabla.length];
+		for(int i = 0; i < datosTabla.size(); i++) {
+			fila[0] = datosTabla.get(i).getIdentificador();
+			fila[1] = datosTabla.get(i).getDni();
+			fila[2] = datosTabla.get(i).getNombre();
+			fila[3] = datosTabla.get(i).getApellidos();
+			fila[4] = datosTabla.get(i).getDireccion();
+			fila[5] = datosTabla.get(i).getTelefono();
+			fila[6] = datosTabla.get(i).getPuesto();
+			modelo.addRow(fila);
+		}
 	}
 
 	@Override
