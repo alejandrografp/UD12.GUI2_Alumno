@@ -59,7 +59,7 @@ public class AccesoTrabajador {
             sentencia.setString(6, trabajador.getTelefono());
 
             int id_puesto = AccesoPuestos.consultarIdPuesto(trabajador.getPuesto());
-            sentencia.setInt(6, id_puesto);
+            sentencia.setInt(7, id_puesto);
             columnasInsertadas = sentencia.executeUpdate();
 
         } catch (SQLException e) {
