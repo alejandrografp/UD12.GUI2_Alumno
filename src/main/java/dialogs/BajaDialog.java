@@ -117,7 +117,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 
 					int filaSeleccionada = tabla.getSelectedRow();
 
-					int respuesta = JOptionPane.showConfirmDialog(null, "�Desea dar de baja el trabajador?", "Borrar",
+					int respuesta = JOptionPane.showConfirmDialog(null, "Desea dar de baja el trabajador?", "Borrar",
 							JOptionPane.YES_NO_OPTION);
 					switch (respuesta) {
 						case JOptionPane.YES_OPTION:
@@ -139,11 +139,13 @@ public class BajaDialog extends JDialog implements ActionListener {
 					}
 
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error",
-							JOptionPane.ERROR_MESSAGE);
+
 				}
 			} else if (tabla.getSelectedRows().length > 1) {
 				JOptionPane.showMessageDialog(null, "Debe seleccionar solamente una fila", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (e.getSource() == cancelar) {
