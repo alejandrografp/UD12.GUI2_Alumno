@@ -110,33 +110,40 @@ public class BajaDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() == aceptar) {
+			if (tabla.getSelectedRows().length == 1) {
+				try {
 
-			try {
-				int id = (int) tabla.getValueAt(tabla.getSelectedRow(), 0);
-				int filaSeleccionada = tabla.getSelectedRow();
+					int id = (int) tabla.getValueAt(tabla.getSelectedRow(), 0);
 
-				int respuesta = JOptionPane.showConfirmDialog(null, "�Desea dar de baja el trabajador?", "Borrar",
-						JOptionPane.YES_NO_OPTION);
-				switch (respuesta) {
-					case JOptionPane.YES_OPTION:
-						// Operaciones en caso afirmativo
-						if (AccesoTrabajador.eliminarTrabajador(id)) {
-							JOptionPane.showMessageDialog(this, "El trabajador se ha eliminado correctamente");
-							DefaultTableModel modelo2 = (DefaultTableModel) tabla.getModel();
-							modelo2.removeRow(filaSeleccionada);
-						} else {
-							JOptionPane.showMessageDialog(null, "El trabajador no se encuentra en la lista", "Error",
-									JOptionPane.ERROR_MESSAGE);
-						}
+					int filaSeleccionada = tabla.getSelectedRow();
 
-						break;
+					int respuesta = JOptionPane.showConfirmDialog(null, "�Desea dar de baja el trabajador?", "Borrar",
+							JOptionPane.YES_NO_OPTION);
+					switch (respuesta) {
+						case JOptionPane.YES_OPTION:
+							// Operaciones en caso afirmativo
+							if (AccesoTrabajador.eliminarTrabajador(id)) {
+								JOptionPane.showMessageDialog(this, "El trabajador se ha eliminado correctamente");
+								DefaultTableModel modelo2 = (DefaultTableModel) tabla.getModel();
+								modelo2.removeRow(filaSeleccionada);
+							} else {
+								JOptionPane.showMessageDialog(null, "El trabajador no se encuentra en la lista", "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
 
-					case JOptionPane.NO_OPTION:
-						// Operaciones en caso negativo
-						break;
+							break;
+
+						case JOptionPane.NO_OPTION:
+							// Operaciones en caso negativo
+							break;
+					}
+
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
-			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(null, "Debe seleccionar una fila", "Error",
+			} else if (tabla.getSelectedRows().length > 1) {
+				JOptionPane.showMessageDialog(null, "Debe seleccionar solamente una fila", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (e.getSource() == cancelar) {
