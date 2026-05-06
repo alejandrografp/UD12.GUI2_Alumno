@@ -84,16 +84,16 @@ public class AccesoTrabajador {
             }
         }
     }
-    public static boolean eliminarTrabajador(int id) throws BDException {
+    public static boolean eliminarTrabajador(String dni) throws BDException {
         Connection conexion = null;
         int columnasInsertadas;
 
         try {
             conexion = abrirConexion();
 
-            String sentenciaEliminarTrabajador = "DELETE FROM trabajador WHERE id = ?;";
+            String sentenciaEliminarTrabajador = "DELETE FROM trabajador WHERE dni = ?;";
             PreparedStatement sentencia = conexion.prepareStatement(sentenciaEliminarTrabajador);
-            sentencia.setInt(1, id);
+            sentencia.setString(1, dni);
             columnasInsertadas = sentencia.executeUpdate();
 
         } catch (SQLException e) {

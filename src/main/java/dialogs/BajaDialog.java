@@ -39,7 +39,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 	ArrayList<Trabajador> datosTabla;
 	Object[] fila;
 
-	Object[] columnasTabla = {"ID", "DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "puesto"};
+	Object[] columnasTabla = {"DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "puesto"};
 	DefaultTableModel modelo;
 
 	Empresa empresa;
@@ -95,13 +95,12 @@ public class BajaDialog extends JDialog implements ActionListener {
 		datosTabla = AccesoTrabajador.consultarTrabajadores();
 		fila = new Object[columnasTabla.length];
 		for(int i = 0; i < datosTabla.size(); i++) {
-			fila[0] = datosTabla.get(i).getIdentificador();
-			fila[1] = datosTabla.get(i).getDni();
-			fila[2] = datosTabla.get(i).getNombre();
-			fila[3] = datosTabla.get(i).getApellidos();
-			fila[4] = datosTabla.get(i).getDireccion();
-			fila[5] = datosTabla.get(i).getTelefono();
-			fila[6] = datosTabla.get(i).getPuesto();
+			fila[0] = datosTabla.get(i).getDni();
+			fila[1] = datosTabla.get(i).getNombre();
+			fila[2] = datosTabla.get(i).getApellidos();
+			fila[3] = datosTabla.get(i).getDireccion();
+			fila[4] = datosTabla.get(i).getTelefono();
+			fila[5] = datosTabla.get(i).getPuesto();
 			modelo.addRow(fila);
 		}
 	}
@@ -112,8 +111,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 		if (e.getSource() == aceptar) {
 			if (tabla.getSelectedRows().length == 1) {
 				try {
-
-					int id = (int) tabla.getValueAt(tabla.getSelectedRow(), 0);
+					String dni = (String) tabla.getValueAt(tabla.getSelectedRow(), 0);
 
 					int filaSeleccionada = tabla.getSelectedRow();
 
@@ -122,7 +120,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 					switch (respuesta) {
 						case JOptionPane.YES_OPTION:
 							// Operaciones en caso afirmativo
-							if (AccesoTrabajador.eliminarTrabajador(id)) {
+							if (AccesoTrabajador.eliminarTrabajador(dni)) {
 								JOptionPane.showMessageDialog(this, "El trabajador se ha eliminado correctamente");
 								DefaultTableModel modelo2 = (DefaultTableModel) tabla.getModel();
 								modelo2.removeRow(filaSeleccionada);
