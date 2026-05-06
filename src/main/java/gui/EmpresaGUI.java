@@ -9,10 +9,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import dao.AccesoTrabajador;
-import dialogs.AltaDialog;
-import dialogs.BajaDialog;
-import dialogs.ListarDialog;
-import dialogs.ModificaDialog;
+import dialogs.*;
 import excepciones.BDException;
 import ficheros.FicheroDatos;
 import modelo.Empresa;
@@ -100,7 +97,7 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 		} else if (e.getSource() == modificaTrabajador) {
 			new ModificaDialog();
 		} else if (e.getSource() == buscaTrabajador) {
-			//new VerDialog(empresa);
+			new VerDialog();
 		} else if (e.getSource() == listarTrabajadores) {
 			new ListarDialog();
 		}
