@@ -44,8 +44,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 
 	Empresa empresa;
 
-	public BajaDialog(Empresa empresa) {
-		this.empresa = empresa;
+	public BajaDialog() {
 
 		setResizable(false);
 		// t�tulo del di�log
@@ -67,6 +66,7 @@ public class BajaDialog extends JDialog implements ActionListener {
         try {
         	modelo = new DefaultTableModel(null, columnasTabla);
 			tabla = new JTable(modelo);
+			tabla.setName("TablaBajaDialog");
 			panel.add(tabla);
 			add(new JScrollPane(tabla));
 			datosTabla(columnasTabla, modelo);
@@ -77,6 +77,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 		add(panelBotones);
 
 		aceptar = new JButton("Aceptar");
+		aceptar.setName("btnAceptar");
 		aceptar.addActionListener(this);
 		panelBotones.add(aceptar);
 
@@ -115,7 +116,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 				int id = (int) tabla.getValueAt(tabla.getSelectedRow(), 0);
 				int filaSeleccionada = tabla.getSelectedRow();
 
-				int respuesta = JOptionPane.showConfirmDialog(null, " Desea dar de baja el trabajador?", "Borrar",
+				int respuesta = JOptionPane.showConfirmDialog(null, "Desea dar de baja el trabajador?", "Borrar",
 						JOptionPane.YES_NO_OPTION);
 				switch (respuesta) {
 					case JOptionPane.YES_OPTION:

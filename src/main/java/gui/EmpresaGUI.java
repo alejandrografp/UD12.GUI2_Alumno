@@ -58,6 +58,7 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 		add(altaTrabajador);
 
 		bajaTrabajador = new JButton("Borrar Trabajador");
+		bajaTrabajador.setName("bajaTrabajador");
 		bajaTrabajador.addActionListener(this);
 		bajaTrabajador.setIcon(new ImageIcon("images/removeUser.png"));
 		add(bajaTrabajador);
@@ -94,7 +95,7 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 		if (e.getSource() == altaTrabajador) {
 			new AltaDialog(empresa);
 		} else if (e.getSource() == bajaTrabajador) {
-			new BajaDialog(empresa);
+			new BajaDialog();
 		} else if (e.getSource() == modificaTrabajador) {
 			//new ModificaDialog(empresa);
 		} else if (e.getSource() == buscaTrabajador) {
