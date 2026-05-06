@@ -112,8 +112,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 		if (e.getSource() == aceptar) {
 			if (tabla.getSelectedRows().length == 1) {
 				try {
-
-					int id = (int) tabla.getValueAt(tabla.getSelectedRow(), 0);
+					String dni = (String) tabla.getValueAt(tabla.getSelectedRow(), 0);
 
 					int filaSeleccionada = tabla.getSelectedRow();
 
@@ -122,7 +121,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 					switch (respuesta) {
 						case JOptionPane.YES_OPTION:
 							// Operaciones en caso afirmativo
-							if (AccesoTrabajador.eliminarTrabajador(id)) {
+							if (AccesoTrabajador.eliminarTrabajador(dni)) {
 								JOptionPane.showMessageDialog(this, "El trabajador se ha eliminado correctamente");
 								DefaultTableModel modelo2 = (DefaultTableModel) tabla.getModel();
 								modelo2.removeRow(filaSeleccionada);

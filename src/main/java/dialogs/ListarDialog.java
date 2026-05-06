@@ -3,15 +3,17 @@
  */
 package dialogs;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.*;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import dao.AccesoTrabajador;
 import excepciones.BDException;
@@ -33,13 +35,20 @@ public class ListarDialog extends JDialog implements ActionListener {
 	JPanel panel;
 	JScrollPane jsp;
 
+	JTextField txtBusqueda;
+	JComboBox<Object> comboFiltro;
+	TableRowSorter<DefaultTableModel> filtrado;
+	JLabel lblSinResultados;
+
+
+
 	public ListarDialog() {
 
 		setResizable(false);
 		// t�tulo del di�log
 		setTitle("Listado Trabajadores");
 		// tama�o
-		setSize(750, 700);
+		setSize(750, 710);
 		setLayout(new FlowLayout());
 		// colocaci�n en el centro de la pantalla
 		setLocationRelativeTo(null);
@@ -59,6 +68,36 @@ public class ListarDialog extends JDialog implements ActionListener {
 
 
 		try {
+			comboFiltro = new JComboBox<>(columnasTabla);
+			txtBusqueda = new JTextField(15);
+			add(comboFiltro);
+			add(txtBusqueda);
+			lblSinResultados = new JLabel("No se encontraron coincidencias");
+			lblSinResultados.setForeground(Color.RED);
+			lblSinResultados.setVisible(false);
+
+			add(lblSinResultados);
+
+			comboFiltro.addActionListener(e -> {
+				aplicarFiltro();
+			});
+
+			txtBusqueda.getDocument().addDocumentListener(new DocumentListener() {
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					aplicarFiltro();
+				}
+
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					aplicarFiltro();
+				}
+
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					aplicarFiltro();
+				}
+			});
 			modelo = new DefaultTableModel(null, columnasTabla);
 			tabla = new JTable(modelo);
 			tabla.setAutoCreateRowSorter(true);
@@ -66,7 +105,13 @@ public class ListarDialog extends JDialog implements ActionListener {
 			jsp = new JScrollPane(tabla);
 			jsp.setPreferredSize(new Dimension(700, 600));
 			add(jsp);
+			filtrado = new TableRowSorter<>(modelo);
+			tabla.setRowSorter(filtrado);
+
+
+
 			datosTabla(columnasTabla, modelo);
+
 		} catch (BDException e) {
 			throw new RuntimeException(e);
 		}
@@ -76,6 +121,28 @@ public class ListarDialog extends JDialog implements ActionListener {
 		add(cerrar);
 
 		setVisible(true);
+	}
+
+	private void aplicarFiltro() {
+		String texto = txtBusqueda.getText();
+		int columnaIndices = comboFiltro.getSelectedIndex();
+
+		if (texto.trim().isEmpty()) {
+			filtrado.setRowFilter(null);
+			lblSinResultados.setVisible(false);
+		} else {
+			try {
+				filtrado.setRowFilter(RowFilter.regexFilter("(?i)" + texto, columnaIndices));
+				if (filtrado.getViewRowCount() == 0) {
+					lblSinResultados.setVisible(true);
+				} else {
+					lblSinResultados.setVisible(false);
+				}
+
+			} catch (java.util.regex.PatternSyntaxException e) {
+				return;
+			}
+		}
 	}
 
 	private static void datosTabla(Object[] columnasTabla, DefaultTableModel modelo) throws BDException {

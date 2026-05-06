@@ -84,16 +84,16 @@ public class AccesoTrabajador {
             }
         }
     }
-    public static boolean eliminarTrabajador(int id) throws BDException {
+    public static boolean eliminarTrabajador(String dni) throws BDException {
         Connection conexion = null;
         int columnasInsertadas;
 
         try {
             conexion = abrirConexion();
 
-            String sentenciaEliminarTrabajador = "DELETE FROM trabajador WHERE id = ?;";
+            String sentenciaEliminarTrabajador = "DELETE FROM trabajador WHERE dni = ?;";
             PreparedStatement sentencia = conexion.prepareStatement(sentenciaEliminarTrabajador);
-            sentencia.setInt(1, id);
+            sentencia.setString(1, dni);
             columnasInsertadas = sentencia.executeUpdate();
 
         } catch (SQLException e) {
@@ -175,7 +175,7 @@ public class AccesoTrabajador {
         try {
             conexion = abrirConexion();
 
-            String sentenciaModificarTrabajador = "UPDATE trabajador SET dni = ?, nombre = ?, apellidos = ?, direccion = ?, telefono = ?, puesto = ? WHERE id = ?;";
+            String sentenciaModificarTrabajador = "UPDATE trabajador SET dni = ?, nombre = ?, apellidos = ?, direccion = ?, telefono = ?, puesto = ? WHERE id = ? OR dni = ?;";
             PreparedStatement sentencia = conexion.prepareStatement(sentenciaModificarTrabajador);
             sentencia.setString(1, trabajador.getDni());
             sentencia.setString(2, trabajador.getNombre());
@@ -186,6 +186,8 @@ public class AccesoTrabajador {
             int id_puesto = AccesoPuestos.consultarIdPuesto(trabajador.getPuesto());
             sentencia.setInt(6, id_puesto);
             sentencia.setInt(7, trabajador.getIdentificador());
+
+            sentencia.setString(8, trabajador.getDni());
             columnasInsertadas = sentencia.executeUpdate();
 
         } catch (SQLException e) {
@@ -199,16 +201,6 @@ public class AccesoTrabajador {
             }
         }
         return columnasInsertadas > 0;
-    }
-
-    static void main(String[] args) {
-        Trabajador trabajador = new Trabajador(1, "1", "a", "a", "a", "2", "Arquitecto");
-        try {
-            insertarTrabajador(trabajador);
-        } catch (BDException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
 }

@@ -123,6 +123,18 @@ public class Trabajador {
 		this.puesto = puesto;
 	}
 
+	@Override
+	public String toString() {
+		return "Trabajador{" +
+				"identificador=" + identificador +
+				", dni='" + dni + '\'' +
+				", nombre='" + nombre + '\'' +
+				", apellidos='" + apellidos + '\'' +
+				", direccion='" + direccion + '\'' +
+				", telefono='" + telefono + '\'' +
+				", puesto='" + puesto + '\'' +
+				'}';
+	}
 
 	public String toStringWithSeparators() {
 
