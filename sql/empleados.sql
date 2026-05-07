@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-05-2026 a las 22:37:11
+-- Tiempo de generación: 07-05-2026 a las 10:13:24
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -57,15 +57,6 @@ CREATE TABLE `trabajador` (
   `telefono` varchar(15) NOT NULL,
   `puesto` int(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `trabajador`
---
-
-INSERT INTO `trabajador` (`id`, `dni`, `nombre`, `apellidos`, `direccion`, `telefono`, `puesto`) VALUES
-(4, '29134814R', '5rfdgfd', 'tgftgf', 'fgdf', '987654323', 2),
-(5, '26056628C', 'Alejandro', 'Gracia Ferrer', 'C.Luis Legaz Lacambra', '662 94 37 33', 1),
-(8, '46168320Y', 'Alexander', 'graxia', 'c.hola', '662943732', 4);
 
 --
 -- Índices para tablas volcadas

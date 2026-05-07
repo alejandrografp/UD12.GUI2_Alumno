@@ -43,7 +43,7 @@ public class ModificaDialog extends JDialog implements ActionListener {
 		// t�tulo del di�log
 		setTitle("Modificar Trabajador");
 		setSize(600, 570);
-		setLayout(new FlowLayout());
+		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setLocationRelativeTo(null);
 
 		panel = new JPanel();
@@ -123,7 +123,8 @@ public class ModificaDialog extends JDialog implements ActionListener {
 
 
 			panel.add(tabla);
-			add(new JScrollPane(tabla));
+			JScrollPane scrollPane = new JScrollPane(tabla);
+			add(scrollPane);
 			datosTabla(columnasTabla, modelo);
 		} catch (BDException e) {
 			throw new RuntimeException(e);
