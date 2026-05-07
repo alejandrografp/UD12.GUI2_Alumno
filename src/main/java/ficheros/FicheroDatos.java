@@ -8,6 +8,8 @@ import dao.AccesoTrabajador;
 import excepciones.BDException;
 import gui.EmpresaGUI;
 import modelo.Trabajador;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * @author alumno
@@ -47,6 +49,55 @@ public class FicheroDatos {
 			}
 		}		
 	}
+
+	/**
+	 * Escribe un ArrayList en el fichero
+	 * @param ruta
+	 * @param trabajadores
+	 */
+	public static void escribirTrabajadoresEnJson(String ruta, ArrayList<Trabajador> trabajadores){
+
+		BufferedWriter fichero = null;
+		FileWriter escribir = null;
+
+		JSONArray trabajadore = new JSONArray();
+		for(int i=0; i<trabajadores.size(); i++){
+			trabajadore.put(trabajadores.get(i).toStringJson());
+		}
+		JSONObject datos = new JSONObject();
+		datos.put("Trabajadores", trabajadore);
+		try {
+			escribir = new FileWriter(ruta);
+			fichero = new BufferedWriter(escribir);
+
+			fichero.write(datos.toString(4));
+
+
+		}
+		catch (FileNotFoundException e1){
+			System.out.printf("Error al abrir fichero para escritura");
+		}
+		catch (IOException e){
+			System.out.printf("Error al escribir en el fichero%n");
+		}
+		finally{
+			try{
+				fichero.close();
+			}
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	static void main(String[] args) {
+        try {
+            escribirTrabajadoresEnJson("ficheroDatos\\empresa.json", AccesoTrabajador.consultarTrabajadores());
+        } catch (BDException e) {
+
+        }
+    }
 	
 	/**
 	 * Devuelve un arraylist con los trabajadores del fichero

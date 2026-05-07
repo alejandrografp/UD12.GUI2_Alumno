@@ -3,10 +3,16 @@
  */
 package modelo;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import org.json.JSONObject;
+
 /**
  * @author alumno
  *
  */
+
 public class Trabajador {
 	
 	private int identificador;
@@ -136,8 +142,26 @@ public class Trabajador {
 				'}';
 	}
 
+	public JSONObject toStringJson() {
+		JSONObject obj = new JSONObject();
+		obj.put("identificador", getIdentificador());
+		obj.put("dni", getDni());
+		obj.put("nombre", getNombre());
+		obj.put("apellidos", getApellidos());
+		obj.put("direccion", getDireccion());
+		obj.put("telefono", getTelefono());
+		obj.put("puesto", getPuesto());
+		return obj;
+	}
+
 	public String toStringWithSeparators() {
 
 		return identificador + ";" + dni + ";" + nombre + ";" + apellidos + ";" + direccion + ";" + telefono + ";" + puesto + "\n";
+	}
+
+	static void main(String[] args) {
+		Trabajador t = new Trabajador(1, "w", "h","t", "e", "1", "p");
+
+		System.out.println(t.toStringJson());
 	}
 }

@@ -1,0 +1,29 @@
+{"Trabajadores": [
+    {
+        "apellidos": "Gracia Ferrer",
+        "puesto": "Programador",
+        "direccion": "C.Luis Legaz Lacambra",
+        "telefono": "662 94 37 33",
+        "nombre": "Alejandro",
+        "dni": "26056628C",
+        "identificador": 5
+    },
+    {
+        "apellidos": "tgftgf",
+        "puesto": "Analista",
+        "direccion": "fgdf",
+        "telefono": "987654323",
+        "nombre": "5rfdgfd",
+        "dni": "29134814R",
+        "identificador": 4
+    },
+    {
+        "apellidos": "graxia",
+        "puesto": "Jefe de Proyecto",
+        "direccion": "c.hola",
+        "telefono": "662943732",
+        "nombre": "Alexander",
+        "dni": "46168320Y",
+        "identificador": 8
+    }
+]}
