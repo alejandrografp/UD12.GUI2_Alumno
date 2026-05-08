@@ -93,6 +93,7 @@ public class VerDialog extends JDialog implements ActionListener{
             modelo = new DefaultTableModel(null, columnasTabla);
             tabla = new JTable(modelo);
             tabla.setAutoCreateRowSorter(true);
+
             panel.add(tabla);
             jsp = new JScrollPane(tabla);
             jsp.setPreferredSize(new Dimension(700, 600));

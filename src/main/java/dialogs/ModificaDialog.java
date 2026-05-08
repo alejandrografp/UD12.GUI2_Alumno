@@ -58,7 +58,6 @@ public class ModificaDialog extends JDialog implements ActionListener {
 			tabla = new JTable(modelo) {
 				@Override
 				public Component prepareEditor(TableCellEditor editor, int row, int column) {
-					// CAPTURA REAL: Guardamos el valor justo antes de que aparezca el editor
 					valorOriginal = getValueAt(row, column).toString();
 					return super.prepareEditor(editor, row, column);
 				}
