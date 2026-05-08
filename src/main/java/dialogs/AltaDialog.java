@@ -72,8 +72,7 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 
 	Empresa empresa;
 
-	public AltaDialog(Empresa empresa) {
-		this.empresa = empresa;
+	public AltaDialog() {
 		setResizable(false);
 		// t�tulo del di�log
 		setTitle("Alta Trabajador");

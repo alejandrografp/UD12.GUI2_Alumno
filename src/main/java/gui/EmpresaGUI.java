@@ -91,7 +91,7 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 		// e implementa el método actionPerformed() pasando como parámetro un
 		// ActionEvent.
 		if (e.getSource() == altaTrabajador) {
-			new AltaDialog(empresa);
+			new AltaDialog();
 		} else if (e.getSource() == bajaTrabajador) {
 			new BajaDialog();
 		} else if (e.getSource() == modificaTrabajador) {

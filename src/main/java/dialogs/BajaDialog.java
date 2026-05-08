@@ -27,8 +27,6 @@ public class BajaDialog extends JDialog implements ActionListener {
 
 	JButton aceptar;
 	JButton cancelar;
-	JLabel identificador;
-	JTextField areaIdentificador;
 	JPanel panel;
 	JPanel panelBotones;
 	JLabel texto;

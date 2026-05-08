@@ -38,7 +38,7 @@ public class VerDialog extends JDialog implements ActionListener{
 
         setResizable(false);
         // t�tulo del di�log
-        setTitle("Listado Trabajadores");
+        setTitle("Buscar Trabajadores");
         // tama�o
         setSize(750, 710);
         setLayout(new FlowLayout());

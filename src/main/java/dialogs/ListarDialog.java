@@ -6,17 +6,21 @@ package dialogs;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.*;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 import dao.AccesoTrabajador;
 import excepciones.BDException;
+import ficheros.FicheroDatos;
 import modelo.Empresa;
 import modelo.Trabajador;
 
@@ -28,6 +32,8 @@ import modelo.Trabajador;
 public class ListarDialog extends JDialog implements ActionListener {
 	static JTable tabla;
 	JButton cerrar;
+	JButton elegirArchivoJSON;
+	JButton elegirArchivoCSV;
 
 	Object[] columnasTabla = {"DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "Puesto"};
 	DefaultTableModel modelo;
@@ -39,10 +45,12 @@ public class ListarDialog extends JDialog implements ActionListener {
 	JComboBox<Object> comboFiltro;
 	TableRowSorter<DefaultTableModel> filtrado;
 	JLabel lblSinResultados;
-
+	JFileChooser selector;
 
 
 	public ListarDialog() {
+
+		selector = new JFileChooser();
 
 		setResizable(false);
 		// t�tulo del di�log
@@ -116,6 +124,16 @@ public class ListarDialog extends JDialog implements ActionListener {
 			throw new RuntimeException(e);
 		}
 
+		selector.setAcceptAllFileFilterUsed(false);
+
+		elegirArchivoJSON = new JButton("Exportar JSON");
+		elegirArchivoJSON.addActionListener(this);
+		add(elegirArchivoJSON);
+
+		elegirArchivoCSV = new JButton("Exportar CSV");
+		elegirArchivoCSV.addActionListener(this);
+		add(elegirArchivoCSV);
+
 		cerrar = new JButton("Cerrar");
 		cerrar.addActionListener(this);
 		add(cerrar);
@@ -139,7 +157,7 @@ public class ListarDialog extends JDialog implements ActionListener {
 					lblSinResultados.setVisible(false);
 				}
 
-			} catch (java.util.regex.PatternSyntaxException e) {
+			} catch (PatternSyntaxException e) {
 				return;
 			}
 		}
@@ -165,7 +183,35 @@ public class ListarDialog extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if (e.getSource() == cerrar) {
+		if (e.getSource() == elegirArchivoJSON) {
+			FileNameExtensionFilter filtro = new FileNameExtensionFilter(".json", "json");
+			selector.setFileFilter(filtro);
+			int resultado = selector.showOpenDialog(this);
+			if (resultado == JFileChooser.APPROVE_OPTION) {
+				File archivoSeleccionado = selector.getSelectedFile();
+				ArrayList<Trabajador> datosTrabajadores = null;
+                try {
+                    datosTrabajadores = AccesoTrabajador.consultarTrabajadores();
+                } catch (BDException ex) {
+                    
+                }
+                FicheroDatos.escribirTrabajadoresEnJson(archivoSeleccionado.getAbsolutePath(), datosTrabajadores);
+			}
+		} else if (e.getSource() == elegirArchivoCSV) {
+			FileNameExtensionFilter filtro = new FileNameExtensionFilter(".csv", "csv");
+			selector.setFileFilter(filtro);
+			int resultado = selector.showOpenDialog(this);
+			if (resultado == JFileChooser.APPROVE_OPTION) {
+				File archivoSeleccionado = selector.getSelectedFile();
+				ArrayList<Trabajador> datosTrabajadores = null;
+				try {
+					datosTrabajadores = AccesoTrabajador.consultarTrabajadores();
+				} catch (BDException ex) {
+
+				}
+				FicheroDatos.escribirTrabajadoresEnCSV(archivoSeleccionado.getAbsolutePath(), datosTrabajadores);
+			}
+		}else if (e.getSource() == cerrar) {
 			dispose();
 		}
 	}
