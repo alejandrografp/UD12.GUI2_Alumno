@@ -1,5 +1,5 @@
-
 package dialogs;
+
 
 import dao.AccesoPuestos;
 import dao.AccesoTrabajador;
@@ -16,174 +16,148 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dialogs.AltaDialog.validarDNI;
 import static dialogs.AltaDialog.validarTelefono;
 
-/**
- *
- * @author usuario
- *
- */
 public class ModificaDialog extends JDialog implements ActionListener {
+	//Botones
 	JButton cancelar;
-	JPanel panel;
-	JPanel panelBotones;
-	static JTable tabla;
 
-	Object[] columnasTabla = {"DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "puesto"};
+	//Elementos Tabla
+	static JTable tabla;
+	Object[] columnasTabla;
 	DefaultTableModel modelo;
 
+	//JPanel
+	JPanel panel;
+	JPanel panelBotones;
+
+	//Valor original de la celda a modificar
 	String valorOriginal;
 
-	boolean restaurando = false;
-
 	public ModificaDialog() {
+		iniciarComponentes();
+	}
 
+	private void iniciarComponentes() {
+
+		//Personalizacion del JDialog
 		setResizable(false);
-		// t�tulo del di�log
 		setTitle("Modificar Trabajador");
-		setSize(600, 570);
+		setSize(600, 560);
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setLocationRelativeTo(null);
 
+		//Inicializamos los JPanel
 		panel = new JPanel();
 		panelBotones = new JPanel();
-		add(panel);
 
-
-
-
-		try {
-			modelo = new DefaultTableModel(null, columnasTabla);
-			tabla = new JTable(modelo) {
-				@Override
-				public Component prepareEditor(TableCellEditor editor, int row, int column) {
-					valorOriginal = getValueAt(row, column).toString();
-					return super.prepareEditor(editor, row, column);
-				}
-			};
-			tabla.setName("TablaBajaDialog");
-			List<String> puestos = AccesoPuestos.consultarPuestos();
-			JComboBox<String> comboColumnaPuesto = new JComboBox<>();
-			for (int i = 0; i < puestos.size(); i++) {
-				comboColumnaPuesto.addItem(puestos.get(i));
+		//inicializamos los componentes restantes
+		columnasTabla = new Object[]{"DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "puesto"};
+		modelo = new DefaultTableModel(null, columnasTabla){
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return column > 0;
 			}
+		};
+		tabla = new JTable(modelo) {
+			@Override
+			public Component prepareEditor(TableCellEditor editor, int row, int column) {
+				valorOriginal = getValueAt(row, column).toString();
+				return super.prepareEditor(editor, row, column);
+			}
+		};
+		cancelar = new JButton("Cancelar");
 
-			tabla.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(comboColumnaPuesto));
+		//Preparar el combobox en la tabla con los valores
+		List<String> puestos = null;
+		try {
+			puestos = AccesoPuestos.consultarPuestos();
+		} catch (BDException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		JComboBox<String> comboColumnaPuesto = new JComboBox<>();
+		for (int i = 0; i < puestos.size(); i++) {
+			comboColumnaPuesto.addItem(puestos.get(i));
+		}
+		tabla.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(comboColumnaPuesto));
 
+		//detecta si hay algun cambio en alguna celda de la tabla
+		modificarCampoTrabajador();
 
+		//Añadimos los componentes a los JPanel
+		panel.add(tabla);
+		panel.add(new JScrollPane(tabla));
+		panelBotones.add(cancelar);
 
-			modelo.addTableModelListener(e -> {
-				if (restaurando) return;
-
-				if (e.getType() == TableModelEvent.UPDATE) {
-					int fila = e.getFirstRow();
-					int col = e.getColumn();
-					Object nuevoValor = tabla.getValueAt(fila, col);
-
-					// Comparamos con el valor que capturó prepareEditor
-					if (valorOriginal != null && !nuevoValor.equals(valorOriginal)) {
-
-						int respuesta = JOptionPane.showConfirmDialog(
-								null,
-								"Desea modificar el trabajador con el dni: " + tabla.getValueAt(fila, 0).toString(),
-								"Modificar Trabajador",
-								JOptionPane.YES_NO_OPTION
-						);
-
-						if (respuesta == JOptionPane.YES_OPTION) {
-                            try {
-                                if (comprobarErrores(
-                                        (String) tabla.getValueAt(fila, 0), (String) tabla.getValueAt(fila, 1),
-                                        (String) tabla.getValueAt(fila, 2), (String) tabla.getValueAt(fila, 3),
-                                        (String) tabla.getValueAt(fila, 4), (String) tabla.getValueAt(fila, 5))) {
-
-                                    modificarDatoTrabajador(fila);
-                                    valorOriginal = nuevoValor.toString();
-                                } else {
-									restaurando = true;
-									tabla.setValueAt(valorOriginal, fila, col);
-									restaurando = false;
-                                }
-                            } catch (BDException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        } else {
-							restaurando = true;
-							tabla.setValueAt(valorOriginal, fila, col);
-							restaurando = false;
-						}
-					}
-				}
-			});
-
-
-
-
-
-			panel.add(tabla);
-			JScrollPane scrollPane = new JScrollPane(tabla);
-			add(scrollPane);
+		//cargamos todos los datos a la tabla
+		try {
 			datosTabla(columnasTabla, modelo);
 		} catch (BDException e) {
-			throw new RuntimeException(e);
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 
+		//Añadimos los JPanel al JDialog
+		add(panel);
 		add(panelBotones);
 
-		cancelar = new JButton("Cancelar");
-		cancelar.addActionListener(this);
-		panelBotones.add(cancelar);
-		// Visible
+		//Visible
 		setVisible(true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
 
-	private void modificarDatoTrabajador(int fila) {
-		Trabajador trabajador = new Trabajador(0, (String) tabla.getValueAt(fila, 0), (String) tabla.getValueAt(fila, 1), (String) tabla.getValueAt(fila, 2), (String) tabla.getValueAt(fila, 3), (String) tabla.getValueAt(fila, 4), (String) tabla.getValueAt(fila, 5));
+	private void modificarCampoTrabajador() {
+		modelo.addTableModelListener(e -> {
+			if (e.getType() == TableModelEvent.UPDATE) {
+				int fila = e.getFirstRow();
+				int col = e.getColumn();
+				Object nuevoValor = tabla.getValueAt(fila, col);
 
-        try {
-            AccesoTrabajador.modificarTrabajador(trabajador);
-        } catch (BDException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
-					JOptionPane.ERROR_MESSAGE);
-        }
-    }
+				if (valorOriginal != null && !nuevoValor.equals(valorOriginal)) {
 
+					int respuesta = JOptionPane.showConfirmDialog(
+							null,
+							"Desea modificar el trabajador con el dni: " + tabla.getValueAt(fila, 0).toString(),
+							"Modificar Trabajador",
+							JOptionPane.YES_NO_OPTION
+					);
 
-	public boolean comprobarErrores(String dni, String nombre, String apellidos, String direccion, String telefono, String puesto) throws BDException {
-		if (dni.trim().equals("") || !validarDNI(dni)) {
-				JOptionPane.showMessageDialog(null, "El DNI debe ser valido", "Error", JOptionPane.ERROR_MESSAGE);
+					if (respuesta == JOptionPane.YES_OPTION) {
+						try {
+							if (comprobarErrores(
+									(String) tabla.getValueAt(fila, 1),
+									(String) tabla.getValueAt(fila, 2), (String) tabla.getValueAt(fila, 3),
+									(String) tabla.getValueAt(fila, 4))) {
 
-			return false;
-		} else if (nombre.trim().equals("")) {
-			JOptionPane.showMessageDialog(null, "Debe introducir el nombre del trabajador", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		} else if (apellidos.trim().equals("")) {
-			JOptionPane.showMessageDialog(null, "Debe introducir los apellidos del trabajador", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		} else if (direccion.equals("")) {
-			JOptionPane.showMessageDialog(null, "Debe introducir la direccion del trabajador", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		} else if (telefono.trim().equals("") || !validarTelefono(telefono)) {
-			JOptionPane.showMessageDialog(null, "El telefono no es valido", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		} else if (puesto.equals("")) {
-			JOptionPane.showMessageDialog(null, "Debe introducir el puesto del trabajador", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
-		return true;
+								modificarDatoTrabajador(fila);
+								datosTabla(columnasTabla, modelo);
+								JOptionPane.showMessageDialog(null, "Trabajador modificado correctamente");
+							} else {
+								datosTabla(columnasTabla, modelo);
+							}
+						} catch (BDException ex) {
+							JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						try {
+							datosTabla(columnasTabla, modelo);
+						} catch (BDException ex) {
+							JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
+					}
+
+				}
+			}
+		});
 	}
 
-
-
 	private static void datosTabla(Object[] columnasTabla, DefaultTableModel modelo) throws BDException {
+		modelo.setRowCount(0);
 		tabla.setModel(modelo);
+		tabla.setRowHeight(24);
 		Object[] fila;
 		ArrayList<Trabajador> datosTabla;
 		datosTabla = AccesoTrabajador.consultarTrabajadores();
@@ -199,6 +173,38 @@ public class ModificaDialog extends JDialog implements ActionListener {
 		}
 	}
 
+	private void modificarDatoTrabajador(int fila) {
+		Trabajador trabajador = new Trabajador(0, (String) tabla.getValueAt(fila, 0), (String) tabla.getValueAt(fila, 1), (String) tabla.getValueAt(fila, 2), (String) tabla.getValueAt(fila, 3), (String) tabla.getValueAt(fila, 4), (String) tabla.getValueAt(fila, 5));
+		try {
+			AccesoTrabajador.modificarTrabajador(trabajador);
+		} catch (BDException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+
+	public boolean comprobarErrores(String nombre, String apellidos, String direccion, String telefono) throws BDException {
+		if (nombre.trim().equals("")) {
+			JOptionPane.showMessageDialog(null, "Debe introducir el nombre del trabajador", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return false;
+		} else if (apellidos.trim().equals("")) {
+			JOptionPane.showMessageDialog(null, "Debe introducir los apellidos del trabajador", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return false;
+		} else if (direccion.trim().equals("")) {
+			JOptionPane.showMessageDialog(null, "Debe introducir la direccion del trabajador", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return false;
+		} else if (!validarTelefono(telefono)) {
+			JOptionPane.showMessageDialog(null, "El telefono no es valido", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == cancelar) {
@@ -206,5 +212,4 @@ public class ModificaDialog extends JDialog implements ActionListener {
 		}
 
 	}
-
 }

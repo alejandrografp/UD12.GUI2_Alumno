@@ -82,6 +82,7 @@ public class EmpresaGUI extends JFrame implements ActionListener {
 		add(salir);
 		// Visible
 		setVisible(true);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
 
 	@Override

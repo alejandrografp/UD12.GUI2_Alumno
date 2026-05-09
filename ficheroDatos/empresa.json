@@ -9,6 +9,15 @@
         "identificador": 5
     },
     {
+        "apellidos": "Gracia Ferrer",
+        "puesto": "Programador",
+        "direccion": "C.a",
+        "telefono": "662943733",
+        "nombre": "Alejandro",
+        "dni": "72367351J",
+        "identificador": 9
+    },
+    {
         "apellidos": "tgftgf",
         "puesto": "Analista",
         "direccion": "fgdf",
@@ -20,7 +29,7 @@
     {
         "apellidos": "graxia",
         "puesto": "Jefe de Proyecto",
-        "direccion": "c.hola",
+        "direccion": "c.hol",
         "telefono": "662943732",
         "nombre": "Alexander",
         "dni": "46168320Y",

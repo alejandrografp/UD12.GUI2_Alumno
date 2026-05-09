@@ -158,10 +158,4 @@ public class Trabajador {
 
 		return identificador + ";" + dni + ";" + nombre + ";" + apellidos + ";" + direccion + ";" + telefono + ";" + puesto + "\n";
 	}
-
-	static void main(String[] args) {
-		Trabajador t = new Trabajador(1, "w", "h","t", "e", "1", "p");
-
-		System.out.println(t.toStringJson());
-	}
 }

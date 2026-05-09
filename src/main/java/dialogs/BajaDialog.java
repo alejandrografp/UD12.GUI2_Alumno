@@ -3,20 +3,16 @@
  */
 package dialogs;
 
-import java.awt.FlowLayout;
+import dao.AccesoTrabajador;
+import excepciones.BDException;
+import modelo.Trabajador;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-
-import dao.AccesoTrabajador;
-import excepciones.BDException;
-import modelo.Empresa;
-import modelo.Trabajador;
 
 /**
  * 
@@ -25,66 +21,80 @@ import modelo.Trabajador;
  */
 public class BajaDialog extends JDialog implements ActionListener {
 
-	JButton aceptar;
+	JButton eliminar;
 	JButton cancelar;
 	JPanel panel;
 	JPanel panelBotones;
 	JLabel texto;
+
 	static JTable tabla;
-
-
-
-	Object[] columnasTabla = {"DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "puesto"};
+	Object[] columnasTabla;
 	DefaultTableModel modelo;
 
-
-
 	public BajaDialog() {
+		iniciarComponentes();
+	}
 
+	private void iniciarComponentes() {
+
+		//Personalizacion del JDialog
 		setResizable(false);
-		// t�tulo del di�log
 		setTitle("Baja Trabajador");
 		setSize(600, 570);
 		setLayout(new FlowLayout());
 		setLocationRelativeTo(null);
 
+		//Inicializamos los JPanel
+		panel = new JPanel();
+		panelBotones = new JPanel();
+
+		//Texto
 		texto = new JLabel("<html><div style='text-align: center;'>Seleccione al trabajador<br> que deseas dar de baja<br><br></div></html>", SwingConstants.CENTER);
 		add(texto);
 
-		panel = new JPanel();
-		panelBotones = new JPanel();
-		add(panel);
+		//Inicializamos elementos Tabla
+		columnasTabla = new Object[]{"DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "puesto"};
+		modelo = new DefaultTableModel(null, columnasTabla) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		tabla = new JTable(modelo);
+		panel.add(tabla);
+		add(new JScrollPane(tabla));
 
+		//Aceptar
+		eliminar = new JButton("Eliminar");
+		eliminar.setName("btnAceptar");
+		eliminar.addActionListener(this);
+		panelBotones.add(eliminar);
 
-
-
-        try {
-        	modelo = new DefaultTableModel(null, columnasTabla);
-			tabla = new JTable(modelo);
-			panel.add(tabla);
-			add(new JScrollPane(tabla));
-			datosTabla(columnasTabla, modelo);
-		} catch (BDException e) {
-            throw new RuntimeException(e);
-        }
-
-		add(panelBotones);
-
-		aceptar = new JButton("Aceptar");
-		aceptar.setName("btnAceptar");
-		aceptar.addActionListener(this);
-		panelBotones.add(aceptar);
-
+		//Cancelar
 		cancelar = new JButton("Cancelar");
 		cancelar.addActionListener(this);
 		panelBotones.add(cancelar);
-		// Visible
+
+		//Añadimos los datos a la tabla
+		try {
+			datosTabla(columnasTabla, modelo);
+		} catch (BDException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+
+		//Añadimos los JPanel al JDialog
+		add(panel);
+		add(panelBotones);
+
+		//Visible
 		setVisible(true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
 
 	private static void datosTabla(Object[] columnasTabla, DefaultTableModel modelo) throws BDException {
+		modelo.setRowCount(0);
 		tabla.setModel(modelo);
+		tabla.setRowHeight(24);
 		Object[] fila;
 		ArrayList<Trabajador> datosTabla;
 		datosTabla = AccesoTrabajador.consultarTrabajadores();
@@ -97,42 +107,33 @@ public class BajaDialog extends JDialog implements ActionListener {
 			fila[4] = datosTabla.get(i).getTelefono();
 			fila[5] = datosTabla.get(i).getPuesto();
 			modelo.addRow(fila);
+
 		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		if (e.getSource() == aceptar) {
+
+		if (e.getSource() == eliminar) {
 			if (tabla.getSelectedRows().length == 1) {
 				try {
 					String dni = (String) tabla.getValueAt(tabla.getSelectedRow(), 0);
-
-					int filaSeleccionada = tabla.getSelectedRow();
-
 					int respuesta = JOptionPane.showConfirmDialog(null, "Desea dar de baja el trabajador?", "Borrar",
 							JOptionPane.YES_NO_OPTION);
 					switch (respuesta) {
 						case JOptionPane.YES_OPTION:
-							// Operaciones en caso afirmativo
 							if (AccesoTrabajador.eliminarTrabajador(dni)) {
 								JOptionPane.showMessageDialog(this, "El trabajador se ha eliminado correctamente");
-								DefaultTableModel modelo2 = (DefaultTableModel) tabla.getModel();
-								modelo2.removeRow(filaSeleccionada);
-							} else {
-								JOptionPane.showMessageDialog(null, "El trabajador no se encuentra en la lista", "Error",
-										JOptionPane.ERROR_MESSAGE);
+								datosTabla(columnasTabla, modelo);
 							}
-
 							break;
-
 						case JOptionPane.NO_OPTION:
-							// Operaciones en caso negativo
 							break;
 					}
 
-				} catch (Exception ex) {
-
+				} catch (BDException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (tabla.getSelectedRows().length > 1) {
 				JOptionPane.showMessageDialog(null, "Debe seleccionar solamente una fila", "Error",
