@@ -61,6 +61,7 @@ public class BajaDialog extends JDialog implements ActionListener {
         try {
         	modelo = new DefaultTableModel(null, columnasTabla);
 			tabla = new JTable(modelo);
+			tabla.setName("TablaBajaDialog");
 			panel.add(tabla);
 			add(new JScrollPane(tabla));
 			datosTabla(columnasTabla, modelo);

@@ -1,21 +1,40 @@
+/**
+ *
+ */
 package dialogs;
 
-import dao.AccesoPuestos;
-import dao.AccesoTrabajador;
-import excepciones.BDException;
-import modelo.Trabajador;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import dao.AccesoPuestos;
+import dao.AccesoTrabajador;
+import excepciones.BDException;
+import modelo.Empresa;
+import modelo.Trabajador;
+
+/**
+ *
+ * @author usuario
+ *
+ */
 public class AltaDialog extends JDialog implements ActionListener, ItemListener {
 
-	//Campos JDialog
+	/**
+	 * Elementos del JFrame
+	 */
 	JLabel etiquetaDni;
 	JTextField areaDni;
 	JLabel etiquetaNombre;
@@ -30,8 +49,10 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 	JComboBox comboPuesto;
 	JButton aceptar;
 	JButton cancelar;
-
-	//Declaramos campos que se usan para obtener datos de los jTextField
+	/**
+	 * Variables a las que se pasar� el contenido de los JTextField y del combo box
+	 */
+	int id = 0;
 	String dni = "";
 	String nombre = "";
 	String apellidos = "";
@@ -39,7 +60,6 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 	String telefono = "";
 	String puesto = "";
 
-	//Declaramos todos los JPanel
 	JPanel pDni;
 	JPanel pNombre;
 	JPanel pApellidos;
@@ -48,20 +68,18 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 	JPanel pPuesto;
 	JPanel pBotones;
 
+	Empresa empresa;
+
 	public AltaDialog() {
-		iniciarComponentes();
-	}
-
-	private void iniciarComponentes() {
-
-		//Personalizacion del JDialog
 		setResizable(false);
+		// t�tulo del di�log
 		setTitle("Alta Trabajador");
 		setSize(300, 350);
 		setLayout(new FlowLayout());
+
 		setLocationRelativeTo(null);
 
-		//Inicializamos los JPanel
+		// una fila por JPanel
 		pDni = new JPanel();
 		pNombre = new JPanel();
 		pApellidos = new JPanel();
@@ -70,103 +88,144 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 		pPuesto = new JPanel();
 		pBotones = new JPanel();
 
-		//Dni
+		// Se crean los elementos y se añaden
+
+		// Se crean los elementos y se añaden
 		etiquetaDni = new JLabel("DNI                 ");
 		areaDni = new JTextField(15);
+		// Se añaden al JPanel
 		pDni.add(etiquetaDni);
 		pDni.add(areaDni);
 
-		//Nombre
+		// Se crean los elementos y se añaden
 		etiquetaNombre = new JLabel("Nombre         ");
 		areaNombre = new JTextField(15);
+		// Se añaden al JPanel
 		pNombre.add(etiquetaNombre);
 		pNombre.add(areaNombre);
 
-		//Apellidos
+		// Se crean los elementos y se a�aden
 		etiquetaApellidos = new JLabel("Apellidos      ");
 		areaApellidos = new JTextField(15);
+		// Se añaden al JPanel
 		pApellidos.add(etiquetaApellidos);
 		pApellidos.add(areaApellidos);
 
-		//Direccion
+		// Se crean los elementos y se añaden
 		etiquetaDireccion = new JLabel("Direccion      ");
 		areaDireccion = new JTextField(15);
+		// Se añaden al JPanel
 		pDireccion.add(etiquetaDireccion);
 		pDireccion.add(areaDireccion);
 
-		//Telefono
+		// Se crean los elementos y se a�aden
 		etiquetaTelefono = new JLabel("Telefono       ");
 		areaTelefono = new JTextField(15);
+		// Se añaden al JPanel
 		pTelefono.add(etiquetaTelefono);
 		pTelefono.add(areaTelefono);
 
-		//Puesto
+		// Se crean los elementos y se añaden
 		etiquetaPuesto = new JLabel("Puesto                         ");
-		comboPuesto = new JComboBox();
-		puestosCombo();
 		pPuesto.add(etiquetaPuesto);
+		// lista desplegable
+		comboPuesto = new JComboBox();
+		comboPuesto.addItem("Elija Puesto");
+		List<String> puestos = null;
+        try {
+             puestos = AccesoPuestos.consultarPuestos();
+        } catch (BDException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(),
+					"Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+		for (int i = 0; i < puestos.size(); i++) {
+			comboPuesto.addItem(puestos.get(i));
+		}
+        comboPuesto.addItemListener(this);
 		pPuesto.add(comboPuesto);
 
-		//Aceptar
-		aceptar = new JButton("Aceptar");
-		aceptar.addActionListener(this);
-		pBotones.add(aceptar);
-
-		//Cancelar
-		cancelar = new JButton("Cancelar");
-		cancelar.addActionListener(this);
-		pBotones.add(cancelar);
-
-		//Añadimos JPanel al JDialog principal
+		// Añadir al JDialog los JPanel
 		add(pDni);
 		add(pNombre);
 		add(pApellidos);
 		add(pDireccion);
 		add(pTelefono);
 		add(pPuesto);
+
+		aceptar = new JButton("Aceptar");
+		aceptar.addActionListener(this);
+		pBotones.add(aceptar);
+
+		cancelar = new JButton("Cancelar");
+		cancelar.addActionListener(this);
+		pBotones.add(cancelar);
+
 		add(pBotones);
 
+		// Visible
 		setVisible(true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
 
-	private void puestosCombo() {
-		comboPuesto.addItem("Elija Puesto");
-		List<String> puestos = null;
-		try {
-			puestos = AccesoPuestos.consultarPuestos();
-		} catch (BDException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(),
-					"Error", JOptionPane.ERROR_MESSAGE);
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		// TODO Auto-generated method stub
+		puesto = comboPuesto.getSelectedItem().toString();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if (e.getSource() == aceptar) {
+			try {
+				dni = areaDni.getText();
+				nombre = areaNombre.getText();
+				apellidos = areaApellidos.getText();
+				direccion = areaDireccion.getText();
+				telefono = areaTelefono.getText();
+				if (comprobarErrores()) {
+					Trabajador t = new Trabajador(0, dni, nombre, apellidos, direccion, telefono, puesto);
+					if (AccesoTrabajador.insertarTrabajador(t)) {
+						JOptionPane.showMessageDialog(null, "Datos introducidos correctamente");
+					} else {
+						JOptionPane.showMessageDialog(null, "El ID del trabajador que quiere introducir ya existe",
+								"Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+
+			} catch (BDException ex) {
+				JOptionPane.showMessageDialog(null, e,
+						"Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } else if (e.getSource() == cancelar) {
+			dispose();
 		}
 
-		for (int i = 0; i < puestos.size(); i++) {
-			comboPuesto.addItem(puestos.get(i));
-		}
-		comboPuesto.addItemListener(this);
 	}
 
 	public static boolean validarDNI(String dni) {
-		if (dni == null || dni.length() != 9) {
-			return false;
-		}
+			if (dni == null || dni.length() != 9) {
+				return false;
+			}
 
-		String dniEnMayusculas = dni.toUpperCase();
-		String numeros = dniEnMayusculas.substring(0, 8);
-		char letra = dniEnMayusculas.charAt(8);
+			String dniEnMayusculas = dni.toUpperCase();
+			String numeros = dniEnMayusculas.substring(0, 8);
+			char letra = dniEnMayusculas.charAt(8);
 
-		if (!numeros.matches("\\d{8}")) {
-			return false;
-		}
+			if (!numeros.matches("\\d{8}")) {
+				return false;
+			}
 
-		String letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
-		int indice = Integer.parseInt(numeros) % 23;
-		char letraEsperada = letrasValidas.charAt(indice);
+			String letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
+			int indice = Integer.parseInt(numeros) % 23;
+			char letraEsperada = letrasValidas.charAt(indice);
 
-		if (letra != letraEsperada) {
-			return false;
-		}
-		return true;
+			if (letra != letraEsperada) {
+				return false;
+			}
+			return true;
 	}
 
 	public static boolean validarTelefono(String telefono) {
@@ -192,50 +251,14 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 		return true;
 	}
 
-	@Override
-	public void itemStateChanged(ItemEvent e) {
-		puesto = comboPuesto.getSelectedItem().toString();
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == aceptar) {
-			try {
-				dni = areaDni.getText();
-				nombre = areaNombre.getText();
-				apellidos = areaApellidos.getText();
-				direccion = areaDireccion.getText();
-				telefono = areaTelefono.getText();
-				if (comprobarErrores()) {
-					Trabajador t = new Trabajador(0, dni, nombre, apellidos, direccion, telefono, puesto);
-					if (AccesoTrabajador.insertarTrabajador(t)) {
-						JOptionPane.showMessageDialog(null, "Datos introducidos correctamente");
-						limpiarDatos();
-					} else {
-						JOptionPane.showMessageDialog(null, "El ID del trabajador que quiere introducir ya existe",
-								"Error", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-
-			} catch (BDException ex) {
-				JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			}
-
-		} else if (e.getSource() == cancelar) {
-			dispose();
-		}
-	}
-
-	private void limpiarDatos() {
-		areaDni.setText("");
-		areaNombre.setText("");
-		areaApellidos.setText("");
-		areaDireccion.setText("");
-		areaTelefono.setText("");
-		comboPuesto.setSelectedIndex(0);
-	}
-
+	/**
+	 * M�todo que comprueba si no hay ning�n campo vac�o o si la longitud de los
+	 * campos es la correcta
+	 *
+	 * @return
+	 */
 	public boolean comprobarErrores() throws BDException {
-		if (!validarDNI(dni) || AccesoTrabajador.consultarTrabajadorPorDni(dni)) {
+		if (dni.trim().equals("") || !validarDNI(dni) || AccesoTrabajador.consultarTrabajadorPorDni(dni)) {
 			if (!AccesoTrabajador.consultarTrabajadorPorDni(dni)) {
 				JOptionPane.showMessageDialog(null, "El DNI debe ser valido", "Error", JOptionPane.ERROR_MESSAGE);
 			} else {
@@ -250,12 +273,12 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 			JOptionPane.showMessageDialog(null, "Debe introducir los apellidos del trabajador", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
-		} else if (direccion.trim().equals("")) {
-			JOptionPane.showMessageDialog(null, "Debe introducir la direccion del trabajador", "Error",
+		} else if (direccion.equals("")) {
+			JOptionPane.showMessageDialog(null, "Debe introducir la direcci�n del trabajador", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
-		} else if (!validarTelefono(telefono)) {
-			JOptionPane.showMessageDialog(null, "El telefono no es valido", "Error",
+		} else if (telefono.trim().equals("") || !validarTelefono(telefono)) {
+			JOptionPane.showMessageDialog(null, "El tel�fono no es valido", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		} else if (puesto.equals("")) {
@@ -265,4 +288,5 @@ public class AltaDialog extends JDialog implements ActionListener, ItemListener 
 		}
 		return true;
 	}
+
 }
