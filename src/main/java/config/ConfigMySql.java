@@ -9,10 +9,10 @@ import excepciones.BDException;
 public class ConfigMySql {
 
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String URLBD = "jdbc:mysql://localhost:3306/empleados";
+    private static final String URLBD = "jdbc:mysql://bay00n5taoh4zxrdgbwc-mysql.services.clever-cloud.com/bay00n5taoh4zxrdgbwc";
 
-    private static final String usuario = "root";
-    private static final String contraseña = "";
+    private static final String usuario = "upj03b5bfhsvja8q";
+    private static final String contraseña = "yK0OQkd15VI5riXLWsri";
 
     /**
      * Abre conexi�n con la base de datos mysql
