@@ -90,14 +90,6 @@ public class FicheroDatos {
 			}
 		}
 	}
-
-	static void main(String[] args) {
-        try {
-            escribirTrabajadoresEnJson("ficheroDatos\\empresa.json", AccesoTrabajador.consultarTrabajadores());
-        } catch (BDException e) {
-
-        }
-    }
 	
 	/**
 	 * Devuelve un arraylist con los trabajadores del fichero
