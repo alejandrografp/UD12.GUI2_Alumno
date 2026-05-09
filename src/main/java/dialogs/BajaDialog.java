@@ -32,15 +32,12 @@ public class BajaDialog extends JDialog implements ActionListener {
 	JLabel texto;
 	static JTable tabla;
 
-	DefaultTableModel model;
 
-	ArrayList<Trabajador> datosTabla;
-	Object[] fila;
 
 	Object[] columnasTabla = {"DNI", "Nombre", "Apellidos", "Direccion", "Telefono", "puesto"};
 	DefaultTableModel modelo;
 
-	Empresa empresa;
+
 
 	public BajaDialog() {
 
@@ -51,7 +48,7 @@ public class BajaDialog extends JDialog implements ActionListener {
 		setLayout(new FlowLayout());
 		setLocationRelativeTo(null);
 
-		texto = new JLabel("<html><div style='text-align: center;'>Seleccione al trabajador<br> que desea dar de baja<br><br></div></html>", SwingConstants.CENTER);
+		texto = new JLabel("<html><div style='text-align: center;'>Seleccione al trabajador<br> que deseas dar de baja<br><br></div></html>", SwingConstants.CENTER);
 		add(texto);
 
 		panel = new JPanel();
@@ -64,7 +61,6 @@ public class BajaDialog extends JDialog implements ActionListener {
         try {
         	modelo = new DefaultTableModel(null, columnasTabla);
 			tabla = new JTable(modelo);
-			tabla.setName("TablaBajaDialog");
 			panel.add(tabla);
 			add(new JScrollPane(tabla));
 			datosTabla(columnasTabla, modelo);
