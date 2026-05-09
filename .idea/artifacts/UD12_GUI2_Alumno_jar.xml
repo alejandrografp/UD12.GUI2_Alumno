@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="UD12.GUI2_Alumno:jar">
+  <artifact type="jar" name="UD12.GUI2_Alumno:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/UD12_GUI2_Alumno_jar</output-path>
     <root id="archive" name="UD12.GUI2_Alumno.jar">
       <element id="module-output" name="UD12.GUI2_Alumno" />
