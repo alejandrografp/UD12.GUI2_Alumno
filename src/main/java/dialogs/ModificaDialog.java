@@ -68,6 +68,9 @@ public class ModificaDialog extends JDialog implements ActionListener {
 		};
 		cancelar = new JButton("Cancelar");
 
+		//bloqueamos que se puedan mover las columnas
+		tabla.getTableHeader().setReorderingAllowed(false);
+
 		//Preparar el combobox en la tabla con los valores
 		List<String> puestos = null;
 		try {

@@ -64,6 +64,9 @@ public class BajaDialog extends JDialog implements ActionListener {
 		panel.add(tabla);
 		add(new JScrollPane(tabla));
 
+		//bloqueamos que se puedan mover las columnas
+		tabla.getTableHeader().setReorderingAllowed(false);
+
 		//Aceptar
 		eliminar = new JButton("Eliminar");
 		eliminar.setName("btnAceptar");

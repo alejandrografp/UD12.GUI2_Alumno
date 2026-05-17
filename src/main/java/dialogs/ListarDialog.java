@@ -80,6 +80,9 @@ public class ListarDialog extends JDialog implements ActionListener {
 		elegirArchivoJSON = new JButton("Exportar JSON");
 		elegirArchivoCSV = new JButton("Exportar CSV");
 
+		//bloqueamos que se puedan mover las columnas
+		tabla.getTableHeader().setReorderingAllowed(false);
+
 		//personalizacion JLabel: busqueda sin resultados
 		lblSinResultados.setForeground(Color.RED);
 		lblSinResultados.setVisible(false);
@@ -209,6 +212,8 @@ public class ListarDialog extends JDialog implements ActionListener {
 			} catch (BDException ex) {
 				JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			}
+			String nombreArchivoExportarJSON = "empleados.json";
+			selector.setSelectedFile(new File(nombreArchivoExportarJSON));
 			FileNameExtensionFilter filtro = new FileNameExtensionFilter(".json", "json");
 			selector.setFileFilter(filtro);
 			int resultado = selector.showOpenDialog(this);
@@ -221,6 +226,7 @@ public class ListarDialog extends JDialog implements ActionListener {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				FicheroDatos.escribirTrabajadoresEnJson(archivoSeleccionado.getAbsolutePath(), datosTrabajadores);
+				JOptionPane.showMessageDialog(null, "Lista de trabajadores exportada correctamente");
 			}
 		} else if (e.getSource() == elegirArchivoCSV) {
 			try {
@@ -228,6 +234,8 @@ public class ListarDialog extends JDialog implements ActionListener {
 			} catch (BDException ex) {
 				JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			}
+			String nombreArchivoExportarCSV = "empleados.csv";
+			selector.setSelectedFile(new File(nombreArchivoExportarCSV));
 			FileNameExtensionFilter filtro = new FileNameExtensionFilter(".csv", "csv");
 			selector.setFileFilter(filtro);
 			int resultado = selector.showOpenDialog(this);
@@ -240,6 +248,7 @@ public class ListarDialog extends JDialog implements ActionListener {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				FicheroDatos.escribirTrabajadoresEnCSV(archivoSeleccionado.getAbsolutePath(), datosTrabajadores);
+				JOptionPane.showMessageDialog(null, "Lista de trabajadores exportada correctamente");
 			}
 		}else if (e.getSource() == cerrar) {
 			dispose();

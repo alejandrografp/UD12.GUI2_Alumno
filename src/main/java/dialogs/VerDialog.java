@@ -81,6 +81,9 @@ public class VerDialog extends JDialog implements ActionListener {
         filtrado = new TableRowSorter<>(modelo);
         tabla.setRowSorter(filtrado);
 
+        //bloqueamos que se puedan mover las columnas
+        tabla.getTableHeader().setReorderingAllowed(false);
+
         //Añadimos cada componente con su JPanel
         panelFiltradoBusqueda.add(comboFiltro);
         panelFiltradoBusqueda.add(txtBusqueda);
